@@ -1,5 +1,7 @@
 import 'package:chatapp/main.dart';
 import 'package:chatapp/screens/auth/login_screen.dart';
+import 'package:chatapp/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,15 +15,22 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds  : 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+    Future.delayed(const Duration(seconds: 2), () {
+
+      if (FirebaseAuth.instance.currentUser != null) {
+        /// navigate to home screen
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      } else {
+        /// navigate to login screen
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     /// initializing media query for getting device screen size
     mq = MediaQuery.of(context).size;
     return Scaffold(
@@ -36,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
               'assets/images/chating.png',
             ),
           ),
+
           /// Text at Bottom
           Positioned(
               bottom: mq.height * .15,
