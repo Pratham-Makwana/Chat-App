@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chatapp/apis/apis.dart';
 import 'package:chatapp/helper/dialogs.dart';
 import 'package:chatapp/main.dart';
 import 'package:chatapp/screens/home_screen.dart';
@@ -31,21 +32,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<UserCredential?> _signInWithGoogle() async {
     try {
-      // Trigger the authentication flow
+      /// Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      // Obtain the auth details from the request
+      /// Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
 
-      // Create a new credential
+      /// Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
 
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      /// Once signed in, return the UserCredential
+      return await APIs.auth.signInWithCredential(credential);
     } catch (e) {
       Dialogs.showSnackBar(context, "Something Went Wrong (Check Internet!)");
       return null;
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   /// sign out function
   _signOut()async{
-    await FirebaseAuth.instance.signOut();
+    await APIs.auth.signOut();
     await GoogleSignIn().signOut();
   }
   @override
