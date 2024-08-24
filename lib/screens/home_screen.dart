@@ -1,7 +1,8 @@
+import 'dart:developer';
+import 'package:chatapp/apis/apis.dart';
 import 'package:chatapp/widgets/chat_user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../main.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,13 +43,27 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      body: ListView.builder(
-          itemCount: 16,
-          padding: EdgeInsets.only(top: mq.height * .02),
-          physics:const BouncingScrollPhysics(),
-          itemBuilder: (context, index) {
-            return const ChatUserCard();
-          }),
+      body: StreamBuilder(
+        stream: APIs.firestore.collection("user").snapshots(),
+        builder: (context, snapshot) {
+          final list = [];
+          if (snapshot.hasData) {
+            final data = snapshot.data?.docs;
+            for (var i in data!) {
+              log('Data ${i.data()}');
+              list.add(i.data()['name']);
+            }
+          }
+          return ListView.builder(
+              itemCount: list.length,
+              padding: EdgeInsets.only(top: mq.height * .02),
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                //return const ChatUserCard();
+                return Text('name : ${list[index]}');
+              });
+        },
+      ),
     );
   }
 }
