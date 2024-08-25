@@ -1,8 +1,8 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:chatapp/apis/apis.dart';
+import 'package:chatapp/screens/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../main.dart';
 import '../model/chat_user.dart';
 import '../widgets/chat_user_card.dart';
@@ -34,7 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
           /// more features button
           IconButton(
-              onPressed: () {}, icon: const Icon(Icons.more_vert_outlined))
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_)=>  ProfileScreen(user: list[0],)));
+              }, icon: const Icon(Icons.more_vert_outlined))
         ],
       ),
 
@@ -42,7 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () async {
+            await APIs.auth.signOut();
+            await GoogleSignIn().signOut();
+          },
           child: const Icon(Icons.add_comment_rounded),
         ),
       ),

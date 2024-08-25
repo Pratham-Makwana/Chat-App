@@ -21,12 +21,21 @@ class _LoginScreenState extends State<LoginScreen> {
     /// for showing progress bar
     Dialogs.showProgressBar(context);
 
-    _signInWithGoogle().then((user) {
+    _signInWithGoogle().then((user) async {
       /// for hiding progress bar
       Navigator.pop(context);
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      if (user != null) {
+        if ((await APIs.userExists())) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        } else {
+          APIs.createUser().then((value) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+          });
+        }
+      }
     });
   }
 
@@ -54,10 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   /// sign out function
-  _signOut()async{
+  _signOut() async {
     await APIs.auth.signOut();
     await GoogleSignIn().signOut();
   }
+
   @override
   Widget build(BuildContext context) {
     //mq = MediaQuery.of(context).size;
