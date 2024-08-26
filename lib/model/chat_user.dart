@@ -10,18 +10,19 @@ class ChatUser {
     required this.pushToken,
     required this.email,
   });
-  late final String image;
-  late final String about;
-  late final String name;
-  late final String createdAt;
-  late final String id;
-  late final bool isOnline;
-  late final String lastActive;
-  late final String pushToken;
-  late final String email;
+
+  late String image;
+  late String about;
+  late String name;
+  late String createdAt;
+  late String id;
+  late bool isOnline;
+  late String lastActive;
+  late String pushToken;
+  late String email;
 
   /// from json data to dart object
-  ChatUser.fromJson(Map<String, dynamic> json){
+  ChatUser.fromJson(Map<String, dynamic> json) {
     image = json['image'] ?? '';
     about = json['about'] ?? '';
     name = json['name'] ?? '';
