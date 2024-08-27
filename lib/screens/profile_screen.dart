@@ -294,7 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       /// Pick an image.
                       final XFile? image = await picker.pickImage(
-                          source: ImageSource.camera, imageQuality: 80.);
+                          source: ImageSource.camera, imageQuality: 80);
                       if (image != null) {
                         setState(() {
                           _image = image.path;
