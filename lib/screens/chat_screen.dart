@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatapp/model/chat_user.dart';
+import 'package:chatapp/model/message.dart';
+import 'package:chatapp/widgets/message_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,12 +22,15 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  List<Message> _list = [];
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
         .copyWith(statusBarColor: Colors.transparent));
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xffFFFFFF),
         /// app bar
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -43,9 +48,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     /// if data is loading
                     case ConnectionState.waiting:
                     case ConnectionState.none:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
 
                     /// if some or all data is loaded then shoe it
                     case ConnectionState.active:
@@ -54,19 +59,32 @@ class _ChatScreenState extends State<ChatScreen> {
                       log('data ${jsonEncode(data![0].data())}');
                       // _list =
                       //     data!.map((e) => ChatUser.fromJson(e.data())).toList();
-                      final _list = ['hiii', 'hello'];
+                      _list.clear();
+                      _list.add(Message(
+                          toId: 'xyz',
+                          msg: 'Hii',
+                          read: '',
+                          type: Type.text,
+                          fromId: APIs.user.uid,
+                          sent: '12:00 AM'));
+                      _list.add(Message(
+                          toId: APIs.user.uid,
+                          msg: 'Hello',
+                          read: '',
+                          type: Type.text,
+                          fromId: 'xyz',
+                          sent: '12:05 AM'));
+
                       if (_list.isNotEmpty) {
                         return ListView.builder(
                           itemCount: _list.length,
                           padding: EdgeInsets.only(top: mq.height * .02),
                           physics: const BouncingScrollPhysics(),
                           itemBuilder: (context, index) {
-                            // return ChatUserCard(
-                            //   user: _isSearching
-                            //       ? _searchList[index]
-                            //       : _list[index],
-                            // );
-                            return Text('message : ${_list[index]}');
+                            return MessageCard(
+                              message: _list[index],
+                            );
+                            //return Text('message : ${_list[index]}');
                           },
                         );
                       } else {
