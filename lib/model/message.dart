@@ -8,10 +8,10 @@ class Message {
     required this.sent,
   });
 
-  late String toId;
+  late String toId; /// self user
   late String msg;
   late String read;
-  late String fromId;
+  late String fromId; /// another user
   late String sent;
   late Type type;
 

@@ -118,7 +118,11 @@ class APIs {
   /// for sending message
   static Future<void> sendMessage(ChatUser chatUser, String msg) async {
     /// message sending time (also used as id)
-    final time = DateTime.now().microsecondsSinceEpoch.toString();
+    final time = DateTime.now().toString();
+    log(time);
+    final hourMin = time.substring(11, 19);
+
+    /// 2024-08-28 17:44:33.770915
 
     ///  message send to
     final Message message = Message(
@@ -127,9 +131,17 @@ class APIs {
         read: '',
         type: Type.text,
         fromId: user.uid,
-        sent: time);
+        sent: hourMin);
     final ref =
         firestore.collection('chats/${getConversionID(chatUser.id)}/messages/');
     await ref.doc(time).set(message.toJson());
+  }
+
+  /// update read status of message
+  static Future<void> updateMessageReadStatus(Message message) async {
+    firestore
+        .collection('chats/${getConversionID(message.fromId)}/messages/')
+        .doc(message.sent)
+        .update({'read': DateTime.now().toString()});
   }
 }
