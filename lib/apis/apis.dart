@@ -103,7 +103,7 @@ class APIs {
   /// chats(collection) --> conversation_id(doc) --> message(collection) --> message(doc)
 
   /// useful for getting conversion id
-  static String getConversionID(String id) => user.uid.hashCode <= id.hashCode
+  static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
       ? '${user.uid}_$id'
       : '${id}_${user.uid}';
 
@@ -111,37 +111,64 @@ class APIs {
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
       ChatUser user) {
     return firestore
-        .collection('chats/${getConversionID(user.id)}/messages/')
+        .collection('chats/${getConversationID(user.id)}/messages/')
         .snapshots();
   }
 
-  /// for sending message
+  // /// for sending message
+  // static Future<void> sendMessage(ChatUser chatUser, String msg) async {
+  //   /// message sending time (also used as id)
+  //   final time = DateTime.now().toString();
+  //   log(time);
+  //   final hourMin = time.substring(11, 19);/// 2024-08-28 17:44:33.770915
+  //
+  //   ///  message send to
+  //   final Message message = Message(
+  //       toId: chatUser.id,
+  //       msg: msg,
+  //       read: '',
+  //       type: Type.text,
+  //       fromId: user.uid,
+  //       sent: hourMin);
+  //   final ref =
+  //       firestore.collection('chats/${getConversionID(chatUser.id)}/messages/');
+  //   await ref.doc(time).set(message.toJson());
+  // }
+
+  // for sending message
   static Future<void> sendMessage(ChatUser chatUser, String msg) async {
-    /// message sending time (also used as id)
-    final time = DateTime.now().toString();
-    log(time);
-    final hourMin = time.substring(11, 19);
+    //message sending time (also used as id)
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
 
-    /// 2024-08-28 17:44:33.770915
-
-    ///  message send to
+    //message to send
     final Message message = Message(
         toId: chatUser.id,
         msg: msg,
         read: '',
         type: Type.text,
         fromId: user.uid,
-        sent: hourMin);
-    final ref =
-        firestore.collection('chats/${getConversionID(chatUser.id)}/messages/');
+        sent: time);
+
+    final ref = firestore
+        .collection('chats/${getConversationID(chatUser.id)}/messages/');
     await ref.doc(time).set(message.toJson());
   }
 
   /// update read status of message
   static Future<void> updateMessageReadStatus(Message message) async {
     firestore
-        .collection('chats/${getConversionID(message.fromId)}/messages/')
+        .collection('chats/${getConversationID(message.fromId)}/messages/')
         .doc(message.sent)
-        .update({'read': DateTime.now().toString()});
+        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+  }
+
+  /// get only last message of a specific chat
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
+      ChatUser user) {
+    return firestore
+        .collection('chats/${getConversationID(user.id)}/messages/')
+        .orderBy('sent', descending: true)
+        .limit(1)
+        .snapshots();
   }
 }

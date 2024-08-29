@@ -3,6 +3,7 @@ import 'package:chatapp/model/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../helper/date_utill.dart';
 import '../main.dart';
 
 class MessageCard extends StatefulWidget {
@@ -15,7 +16,6 @@ class MessageCard extends StatefulWidget {
 }
 
 class _MessageCardState extends State<MessageCard> {
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
@@ -34,14 +34,12 @@ class _MessageCardState extends State<MessageCard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-
         /// message content
         Flexible(
           child: Container(
             padding: EdgeInsets.all(mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
-
             decoration: BoxDecoration(
                 color: const Color(0xFFF7F7F7),
                 border: Border.all(color: const Color(0xFFCCCCCC)),
@@ -60,10 +58,11 @@ class _MessageCardState extends State<MessageCard> {
         /// message time
         Row(
           children: [
-
             /// read time
             Text(
-              widget.message.sent.substring(0, 5),
+              MyDateUtil.getFormattedTime(
+                  context: context, time: widget.message.sent),
+              //widget.message.sent.substring(0, 5),
               style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
 
@@ -94,30 +93,25 @@ class _MessageCardState extends State<MessageCard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-
         /// message time
         Row(
           children: [
-
             /// for adding some space
             SizedBox(
               width: mq.width * .04,
             ),
 
-            /// double tick  icon for message read
-            if (widget.message.read.isEmpty)
-              const Icon(
-                Icons.done_all_outlined,
-                //color: Colors.blue,
-                size: 20,
-              ),
-            /// double tick blue icon for message read
-            if (widget.message.read.isNotEmpty)
-              const Icon(
-                Icons.done_all_rounded,
-                color: Colors.blue,
-                size: 20,
-              ),
+            ///double tick blue icon for message read
+            // if (widget.message.read.isNotEmpty)
+            //   const Icon(Icons.done_all_rounded, color: Colors.blue, size: 20),
+            Icon(
+                widget.message.read.isNotEmpty
+                    ? Icons.done_all_rounded
+                    : Icons.done_all_rounded,
+                color: widget.message.read.isNotEmpty
+                    ? Colors.blue
+                    : Colors.black54,
+                size: 20),
 
             /// for adding some space
             const SizedBox(
@@ -126,7 +120,9 @@ class _MessageCardState extends State<MessageCard> {
 
             /// send time
             Text(
-              widget.message.sent.substring(0, 5),
+              MyDateUtil.getFormattedTime(
+                  context: context, time: widget.message.sent),
+              //widget.message.sent.substring(0, 5),
               style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ],
@@ -152,7 +148,5 @@ class _MessageCardState extends State<MessageCard> {
         ),
       ],
     );
-    //#DCF8C6 for background
-    // #34B759 border of green
   }
 }

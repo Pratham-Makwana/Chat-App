@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatapp/apis/apis.dart';
+import 'package:chatapp/helper/date_utill.dart';
 import 'package:chatapp/model/chat_user.dart';
+import 'package:chatapp/model/message.dart';
 import 'package:chatapp/screens/chat_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +19,9 @@ class ChatUserCard extends StatefulWidget {
 }
 
 class _ChatUserCardState extends State<ChatUserCard> {
+  /// last message info ( if null --> no message)
+  Message? _message = null;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -27,44 +33,71 @@ class _ChatUserCardState extends State<ChatUserCard> {
         onTap: () {
           /// for  navigate to chat screen
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) =>  ChatScreen(user: widget.user,)));
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                        user: widget.user,
+                      )));
         },
-        child: ListTile(
-          /// User Profile Picture
-          // leading: const CircleAvatar(child: Icon(CupertinoIcons.person),),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(mq.height * .4),
-            child: CachedNetworkImage(
-              height: mq.height * .055,
-              width: mq.height * .055,
-              imageUrl: widget.user.image,
-              // placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) =>
-                  const CircleAvatar(child: Icon(CupertinoIcons.person)),
-            ),
-          ),
+        child: StreamBuilder(
+          stream: APIs.getLastMessage(widget.user),
+          builder: (context, snapshot) {
+            final data = (snapshot.hasData) ? snapshot.data!.docs : [];
 
-          /// User Name
-          title: Text(widget.user.name),
+            // if (data != null && data.first.exists) {
+            //   _message = Message.fromJson(data.first.data());
+            // }
 
-          /// Last Message
-          subtitle: Text(
-            widget.user.about,
-            maxLines: 1,
-          ),
+            final list = data.map((e) => Message.fromJson(e.data())).toList();
 
-          /// Last Message Time?
-          trailing: Container(
-            height: 15,
-            width: 15,
-            decoration: BoxDecoration(
-                color: Colors.greenAccent.shade400,
-                borderRadius: BorderRadius.circular(10)),
-          ),
-          // trailing: const Text(
-          //   "12.00 AM",
-          //   style: TextStyle(color: Colors.black54),
-          // ),
+            if (list.isNotEmpty) _message = list[0];
+
+            return ListTile(
+              /// User Profile Picture
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(mq.height * .4),
+                child: CachedNetworkImage(
+                  height: mq.height * .055,
+                  width: mq.height * .055,
+                  imageUrl: widget.user.image,
+                  // placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) =>
+                      const CircleAvatar(child: Icon(CupertinoIcons.person)),
+                ),
+              ),
+
+              /// User Name
+              title: Text(widget.user.name),
+
+              /// Last Message
+              subtitle: Text(
+                _message != null ? _message!.msg : widget.user.about,
+                maxLines: 1,
+              ),
+
+              /// Last Message Time?
+              trailing: _message == null
+                  ? null
+
+                  /// show nothing when no message sent
+                  : _message!.read.isEmpty && _message!.fromId != APIs.user.uid
+
+                      /// show for unread message
+                      ? Container(
+                          height: 15,
+                          width: 15,
+                          decoration: BoxDecoration(
+                              color: Colors.greenAccent.shade400,
+                              borderRadius: BorderRadius.circular(10)),
+                        )
+                      /// Message sent time
+                      : Text(MyDateUtil.getLastMessageTime(context: context, time: _message!.sent)),
+              // trailing: const Text(
+              //   "12.00 AM",
+              //   style: TextStyle(color: Colors.black54),
+              // ),
+            );
+          },
         ),
       ),
     );
