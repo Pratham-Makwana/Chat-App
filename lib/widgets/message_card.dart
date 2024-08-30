@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatapp/apis/apis.dart';
 import 'package:chatapp/model/message.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class _MessageCardState extends State<MessageCard> {
         /// message content
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image ? mq.width * .02 :mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
             decoration: BoxDecoration(
@@ -51,7 +52,20 @@ class _MessageCardState extends State<MessageCard> {
                   topRight: Radius.circular(15),
                   bottomLeft: Radius.circular(15),
                 )),
-            child: Text(widget.message.msg),
+            child: widget.message.type == Type.text
+                ? Text(widget.message.msg)
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2,),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.image,
+                        size: 70,
+                      ),
+                    ),
+                  ),
           ),
         ),
 
@@ -131,19 +145,31 @@ class _MessageCardState extends State<MessageCard> {
         /// message content
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image ? mq.width *.01 :mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
             decoration: BoxDecoration(
                 color: const Color(0xFFDCF8C6),
-                border: Border.all(color: const Color(0xFF34B759)),
+                border: Border.all(color: const Color(0xFFDCF8C6)),
                 borderRadius: const BorderRadius.only(
                   bottomRight: Radius.circular(15),
                   topLeft: Radius.circular(15),
                   // topRight: Radius.circular(15),
                   bottomLeft: Radius.circular(15),
                 )),
-            child: Text(widget.message.msg),
+            child: widget.message.type == Type.text
+                ? Text(widget.message.msg)
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) => const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.image,
+                        size: 70,
+                      ),
+                    ),
+                  ),
           ),
         ),
       ],

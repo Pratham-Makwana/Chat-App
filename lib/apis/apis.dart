@@ -115,28 +115,8 @@ class APIs {
         .snapshots();
   }
 
-  // /// for sending message
-  // static Future<void> sendMessage(ChatUser chatUser, String msg) async {
-  //   /// message sending time (also used as id)
-  //   final time = DateTime.now().toString();
-  //   log(time);
-  //   final hourMin = time.substring(11, 19);/// 2024-08-28 17:44:33.770915
-  //
-  //   ///  message send to
-  //   final Message message = Message(
-  //       toId: chatUser.id,
-  //       msg: msg,
-  //       read: '',
-  //       type: Type.text,
-  //       fromId: user.uid,
-  //       sent: hourMin);
-  //   final ref =
-  //       firestore.collection('chats/${getConversionID(chatUser.id)}/messages/');
-  //   await ref.doc(time).set(message.toJson());
-  // }
-
   // for sending message
-  static Future<void> sendMessage(ChatUser chatUser, String msg) async {
+  static Future<void> sendMessage(ChatUser chatUser, String msg,Type type) async {
     //message sending time (also used as id)
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -145,7 +125,7 @@ class APIs {
         toId: chatUser.id,
         msg: msg,
         read: '',
-        type: Type.text,
+        type: type,
         fromId: user.uid,
         sent: time);
 
@@ -170,5 +150,28 @@ class APIs {
         .orderBy('sent', descending: true)
         .limit(1)
         .snapshots();
+  }
+
+  /// send chat image
+  static Future<void> sendChatImage(ChatUser chatUser, File file) async {
+    /// getting the file extension
+    final ext = file.path.split('.').last;
+
+    /// storage file ref with path
+    /// path where image store
+    /// image name is equal to user uid
+    final ref = storage.ref().child(
+        'images/${getConversationID(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
+
+    /// upload image
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {
+      log('Data Transferred: ${p0.bytesTransferred / 1000} kb');
+    });
+
+    /// upload image in firebase
+    final imageUrl = await ref.getDownloadURL();
+    await sendMessage(chatUser, imageUrl, Type.image);
   }
 }

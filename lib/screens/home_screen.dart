@@ -39,6 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       /// for hiding keyboard when a tab is detected on screen
       onTap: () => Focus.of(context).unfocus(),
+
+      /// if search is on & back button pressed then close search
+      /// or else simple close current screen on back button click
       child: PopScope(
         canPop: _isSearching ? false : true,
         onPopInvokedWithResult: (didPop,_){
