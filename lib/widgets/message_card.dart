@@ -28,7 +28,7 @@ class _MessageCardState extends State<MessageCard> {
 
   /// sender or another user message
   Widget _blueMessage() {
-    /// update last read message if sender and receiver are different
+    ///update last read message if sender and receiver are different
     if (widget.message.read.isEmpty) {
       APIs.updateMessageReadStatus(widget.message);
     }
@@ -38,7 +38,9 @@ class _MessageCardState extends State<MessageCard> {
         /// message content
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(widget.message.type == Type.image ? mq.width * .02 :mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image
+                ? mq.width * .02
+                : mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
             decoration: BoxDecoration(
@@ -53,13 +55,21 @@ class _MessageCardState extends State<MessageCard> {
                   bottomLeft: Radius.circular(15),
                 )),
             child: widget.message.type == Type.text
+
+                /// show text
                 ? Text(widget.message.msg)
+
+                /// show images
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
-
                       imageUrl: widget.message.msg,
-                      placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2,),
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
                       errorWidget: (context, url, error) => const Icon(
                         Icons.image,
                         size: 70,
@@ -116,16 +126,16 @@ class _MessageCardState extends State<MessageCard> {
             ),
 
             ///double tick blue icon for message read
-            // if (widget.message.read.isNotEmpty)
-            //   const Icon(Icons.done_all_rounded, color: Colors.blue, size: 20),
-            Icon(
-                widget.message.read.isNotEmpty
-                    ? Icons.done_all_rounded
-                    : Icons.done_all_rounded,
-                color: widget.message.read.isNotEmpty
-                    ? Colors.blue
-                    : Colors.black54,
-                size: 20),
+            if (widget.message.read.isNotEmpty)
+              const Icon(Icons.done_all_rounded, color: Colors.blue, size: 20),
+            // Icon(
+            //     widget.message.read.isNotEmpty
+            //         ? Icons.done_all_rounded
+            //         : Icons.done_all_rounded,
+            //     color: widget.message.read.isNotEmpty
+            //         ? Colors.blue
+            //         : Colors.black54,
+            //     size: 20),
 
             /// for adding some space
             const SizedBox(
@@ -145,7 +155,9 @@ class _MessageCardState extends State<MessageCard> {
         /// message content
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(widget.message.type == Type.image ? mq.width *.01 :mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image
+                ? mq.width * .01
+                : mq.width * .04),
             margin: EdgeInsets.symmetric(
                 horizontal: mq.width * .04, vertical: mq.height * .01),
             decoration: BoxDecoration(
@@ -158,12 +170,21 @@ class _MessageCardState extends State<MessageCard> {
                   bottomLeft: Radius.circular(15),
                 )),
             child: widget.message.type == Type.text
+
+                /// show text
                 ? Text(widget.message.msg)
+
+                /// show images
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
                       imageUrl: widget.message.msg,
-                      placeholder: (context, url) => const CircularProgressIndicator(),
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
                       errorWidget: (context, url, error) => const Icon(
                         Icons.image,
                         size: 70,

@@ -112,11 +112,13 @@ class APIs {
       ChatUser user) {
     return firestore
         .collection('chats/${getConversationID(user.id)}/messages/')
+        .orderBy('sent', descending: true)
         .snapshots();
   }
 
   // for sending message
-  static Future<void> sendMessage(ChatUser chatUser, String msg,Type type) async {
+  static Future<void> sendMessage(
+      ChatUser chatUser, String msg, Type type) async {
     //message sending time (also used as id)
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 

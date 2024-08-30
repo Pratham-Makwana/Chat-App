@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// PopScope
   bool _canPop = true;
+
   @override
   void initState() {
     super.initState();
@@ -44,25 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
       /// or else simple close current screen on back button click
       child: PopScope(
         canPop: _isSearching ? false : true,
-        onPopInvokedWithResult: (didPop,_){
+        onPopInvokedWithResult: (didPop, _) {
           if (_isSearching) {
             setState(() {
               _isSearching = !_isSearching;
             });
           }
         },
-
-        // WillPopScope(
-        // onWillPop: () {
-        //   if (_isSearching) {
-        //     setState(() {
-        //       _isSearching = !_isSearching;
-        //     });
-        //     return Future.value(false);
-        //   } else {
-        //     return Future.value(true);
-        //   }
-        // },
         child: Scaffold(
           /// AppBar
           appBar: AppBar(

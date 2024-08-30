@@ -71,7 +71,11 @@ class _ChatUserCardState extends State<ChatUserCard> {
 
               /// Last Message
               subtitle: Text(
-                _message != null ? _message!.msg : widget.user.about,
+                _message != null
+                    ? _message!.type == Type.image
+                        ? 'Image'
+                        : _message!.msg
+                    : widget.user.about,
                 maxLines: 1,
               ),
 
@@ -90,8 +94,10 @@ class _ChatUserCardState extends State<ChatUserCard> {
                               color: Colors.greenAccent.shade400,
                               borderRadius: BorderRadius.circular(10)),
                         )
+
                       /// Message sent time
-                      : Text(MyDateUtil.getLastMessageTime(context: context, time: _message!.sent)),
+                      : Text(MyDateUtil.getLastMessageTime(
+                          context: context, time: _message!.sent)),
               // trailing: const Text(
               //   "12.00 AM",
               //   style: TextStyle(color: Colors.black54),

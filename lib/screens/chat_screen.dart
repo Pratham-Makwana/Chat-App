@@ -32,19 +32,21 @@ class _ChatScreenState extends State<ChatScreen> {
   /// for storing value of showing or hiding emoji
   bool _showEmoji = false;
 
+  /// for checking if image is uploading or not?
+  bool _isUploading = false;
+
   @override
   Widget build(BuildContext context) {
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
     //     .copyWith(statusBarColor: Colors.transparent));
     return GestureDetector(
-      onTap: ()=> FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(
-
         /// emoji are shown  & back button pressed then hide emoji
         /// or else simple close current screen on back button click
         child: PopScope(
           canPop: _showEmoji ? false : true,
-          onPopInvokedWithResult: (didPop,_){
+          onPopInvokedWithResult: (didPop, _) {
             if (_showEmoji) {
               setState(() {
                 _showEmoji = !_showEmoji;
@@ -52,7 +54,6 @@ class _ChatScreenState extends State<ChatScreen> {
             }
           },
           child: Scaffold(
-
             backgroundColor: const Color(0xffFFFFFF),
 
             /// app bar
@@ -79,11 +80,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         case ConnectionState.done:
                           final data = snapshot.data?.docs;
                           //log('data ${jsonEncode(data![0].data())}');
-                          _list =
-                              data!.map((e) => Message.fromJson(e.data())).toList();
+                          _list = data!
+                              .map((e) => Message.fromJson(e.data()))
+                              .toList();
 
                           if (_list.isNotEmpty) {
                             return ListView.builder(
+                              reverse: true,
                               itemCount: _list.length,
                               padding: EdgeInsets.only(top: mq.height * .02),
                               physics: const BouncingScrollPhysics(),
@@ -105,25 +108,34 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
+
+                /// progress indicator for showing uploading
+                if (_isUploading)
+                  const Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                        child: CircularProgressIndicator(),
+                      )),
                 _chatInput(),
 
                 /// showing emojis on keyboard emoji button click
-                if(_showEmoji)
-                SizedBox(
-                  height: mq.height * .35,
-                  child: EmojiPicker(
-                    textEditingController: _textController,
-                    // pass here the same [TextEditingController] that is connected to your input field, usually a [TextFormField]
-                    config: Config(
-                      //height: 256,
-                     checkPlatformCompatibility: true,
-                      emojiViewConfig: EmojiViewConfig(
-
-                        emojiSizeMax: 28 * (Platform.isIOS ? 1.20 : 1.0),
+                if (_showEmoji)
+                  SizedBox(
+                    height: mq.height * .35,
+                    child: EmojiPicker(
+                      textEditingController: _textController,
+                      // pass here the same [TextEditingController] that is connected to your input field, usually a [TextFormField]
+                      config: Config(
+                        //height: 256,
+                        checkPlatformCompatibility: true,
+                        emojiViewConfig: EmojiViewConfig(
+                          emojiSizeMax: 28 * (Platform.isIOS ? 1.20 : 1.0),
+                        ),
                       ),
                     ),
-                  ),
-                )
+                  )
               ],
             ),
           ),
@@ -220,8 +232,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    onTap: (){
-                      if(_showEmoji) setState(() => _showEmoji = !_showEmoji);
+                    onTap: () {
+                      if (_showEmoji) setState(() => _showEmoji = !_showEmoji);
                     },
                     decoration: const InputDecoration(
                         hintText: 'Message',
@@ -231,7 +243,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   /// pick image from gallery button
                   IconButton(
-                      onPressed: ()  {},
+                      onPressed: () async {
+                        final ImagePicker picker = ImagePicker();
+
+                        /// Picking Multiple Images
+                        final List<XFile> images =
+                            await picker.pickMultiImage(imageQuality: 70);
+
+                        /// Uploading & Sending image one by one
+                        for (var i in images) {
+                          setState(() => _showEmoji = true);
+                          await APIs.sendChatImage(widget.user, File(i.path));
+                          setState(() => _showEmoji = false);
+                        }
+                      },
                       icon: const Icon(
                         Icons.image_outlined,
                         //color: Colors.deepPurple,
@@ -244,10 +269,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         final ImagePicker picker = ImagePicker();
 
                         /// Picks an image
-                        final XFile? image = await picker.pickImage(source: ImageSource.camera,imageQuality: 70);
-                        if(image != null){
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.camera, imageQuality: 70);
+                        if (image != null) {
                           log('image path ${image.path}');
-                          await APIs.sendChatImage(widget.user, File(image.path));
+                          setState(() => _showEmoji = true);
+                          await APIs.sendChatImage(
+                              widget.user, File(image.path));
+                          setState(() => _showEmoji = false);
                         }
                       },
                       icon: const Icon(
