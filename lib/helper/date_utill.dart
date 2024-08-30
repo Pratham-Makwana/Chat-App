@@ -10,7 +10,7 @@ class MyDateUtil {
 
   ///  last message time (user in chat card)
   static String getLastMessageTime(
-      {required BuildContext context, required String time}) {
+      {required BuildContext context, required String time,bool showYear = false}) {
     final DateTime sentTime =
         DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     final DateTime currentTime = DateTime.now();
@@ -22,7 +22,7 @@ class MyDateUtil {
     }
 
     /// sentTime.month return integer so used switch case to get month
-    return '${sentTime.day} ${_getMonth(sentTime)}';
+    return showYear ? '${sentTime.day} ${_getMonth(sentTime)} ${sentTime.year}': '${sentTime.day} ${_getMonth(sentTime)}';
   }
 
   static String _getMonth(DateTime date) {
@@ -53,5 +53,30 @@ class MyDateUtil {
         return 'Dec';
     }
     return 'NA';
+  }
+
+  /// get formatted active time of the user in chat screen
+  static String getLastActiveTime(
+      {required BuildContext context, required String lastActive}) {
+    final int i = int.tryParse(lastActive) ?? -1;
+
+    /// if time is not available then return this
+    if (i == -1) return 'Last Seen  Not Available';
+
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(i);
+    DateTime now = DateTime.now();
+    String formattedTime = TimeOfDay.fromDateTime(time).format(context);
+    if (time.day == now.day &&
+        time.month == now.month &&
+        time.year == now.year) {
+      return 'Last seen today at $formattedTime';
+    }
+
+    if ((now.difference(time).inHours / 24).round() == 1) {
+      return 'Last seen yesterday at $formattedTime';
+    }
+
+    String month = _getMonth(time);
+    return 'Last seen on ${time.day} $month on $formattedTime';
   }
 }
