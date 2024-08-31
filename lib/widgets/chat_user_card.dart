@@ -4,6 +4,7 @@ import 'package:chatapp/helper/date_utill.dart';
 import 'package:chatapp/model/chat_user.dart';
 import 'package:chatapp/model/message.dart';
 import 'package:chatapp/screens/chat_screen.dart';
+import 'package:chatapp/widgets/dialogs/profile_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -54,15 +55,20 @@ class _ChatUserCardState extends State<ChatUserCard> {
 
             return ListTile(
               /// User Profile Picture
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(mq.height * .4),
-                child: CachedNetworkImage(
-                  height: mq.height * .055,
-                  width: mq.height * .055,
-                  imageUrl: widget.user.image,
-                  // placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) =>
-                      const CircleAvatar(child: Icon(CupertinoIcons.person)),
+              leading: InkWell(
+                onTap: (){
+                  showDialog(context: context, builder: (_) => ProfileDialog(user: widget.user));
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(mq.height * .4),
+                  child: CachedNetworkImage(
+                    height: mq.height * .055,
+                    width: mq.height * .055,
+                    imageUrl: widget.user.image,
+                    // placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const CircleAvatar(child: Icon(CupertinoIcons.person)),
+                  ),
                 ),
               ),
 
