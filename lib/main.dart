@@ -16,7 +16,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   /// enter full-screen
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+ // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
   await _initializeFirebase();
 

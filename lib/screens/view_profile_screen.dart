@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatapp/apis/apis.dart';
-import 'package:chatapp/helper/date_utill.dart';
+import 'package:chatapp/helper/date_util.dart';
 import 'package:chatapp/helper/dialogs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

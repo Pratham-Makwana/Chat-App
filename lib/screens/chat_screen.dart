@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatapp/helper/date_utill.dart';
+import 'package:chatapp/helper/date_util.dart';
 import 'package:chatapp/model/chat_user.dart';
 import 'package:chatapp/model/message.dart';
 import 'package:chatapp/screens/view_profile_screen.dart';
