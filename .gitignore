@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/release
 
 /lib/firebase_options.dart
+/lib/apis/access_firebase_token.dart
+
+

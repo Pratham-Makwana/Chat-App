@@ -48,8 +48,12 @@ dependencies:
 
   # Bearer Token for Push Notification
   googleapis_auth: ^1.6.0
+
   # For calling RestAPIs
-  http:
+  http: ^1.2.2
+
+  # For Creating Notification Channel
+  flutter_notification_channel: ^3.1.0
 
 dev_dependencies:
   flutter_test:
