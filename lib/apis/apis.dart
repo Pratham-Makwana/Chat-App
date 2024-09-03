@@ -256,6 +256,14 @@ class APIs {
       await storage.refFromURL(message.msg).delete();
     }
   }
+  /// update msg
+  static Future<void> updateMessage(Message message,String updateMessage) async {
+    await firestore
+        .collection('chats/${getConversationID(message.toId)}/messages/')
+        .doc(message.sent)
+        .update({'msg': updateMessage});
+
+  }
 
   /// send chat image
   static Future<void> sendChatImage(ChatUser chatUser, File file) async {

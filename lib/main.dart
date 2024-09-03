@@ -47,8 +47,6 @@ class MyApp extends StatelessWidget {
               color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal),
         ),
 
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        //useMaterial3: true,
       ),
       home: const SplashScreen(),
     );
@@ -56,15 +54,14 @@ class MyApp extends StatelessWidget {
 }
 
 Future<void> _initializeFirebase() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   var result = await FlutterNotificationChannel().registerNotificationChannel(
-    description: 'For Showing Message Notification',
-    id: 'chats',
-    importance: NotificationImportance.IMPORTANCE_HIGH,
-    name: 'Chats',
-  );
+      description: 'For Showing Message Notification',
+      id: 'chats',
+      importance: NotificationImportance.IMPORTANCE_HIGH,
+      name: 'Chats');
+
   log('\nNotification Channel Result: $result');
 }
+

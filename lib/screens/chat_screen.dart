@@ -32,29 +32,45 @@ class _ChatScreenState extends State<ChatScreen> {
   /// for handling message text changes
   final _textController = TextEditingController();
 
-  /// for storing value of showing or hiding emoji
-  bool _showEmoji = false;
-
-  /// for checking if image is uploading or not?
-  bool _isUploading = false;
+  //showEmoji -- for storing value of showing or hiding emoji
+  //isUploading -- for checking if image is uploading or not?
+  bool _showEmoji = false, _isUploading = false;
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark
-        .copyWith(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(
         /// emoji are shown  & back button pressed then hide emoji
         /// or else simple close current screen on back button click
         child: PopScope(
-          canPop: _showEmoji ? false : true,
+          // onWillPop: () {
+          //   if (_showEmoji) {
+          //     setState(() => _showEmoji = !_showEmoji);
+          //     return Future.value(false);
+          //   } else {
+          //     return Future.value(true);
+          //   }
+          // },
+          canPop: false,
           onPopInvokedWithResult: (didPop, _) {
             if (_showEmoji) {
-              setState(() {
-                _showEmoji = !_showEmoji;
-              });
+              setState(() => _showEmoji = !_showEmoji);
+              return;
             }
+
+            /// some delay before pop
+            Future.delayed(Duration(milliseconds: 300), () {
+              try {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+              } catch (e) {
+                log('ErrorPop: $e');
+              }
+            });
           },
           child: Scaffold(
             backgroundColor: const Color(0xffFFFFFF),
@@ -151,7 +167,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _appBar() {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ViewProfileScreen(user: widget.user)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ViewProfileScreen(user: widget.user)));
       },
       child: StreamBuilder(
         stream: APIs.getUserinfo(widget.user),

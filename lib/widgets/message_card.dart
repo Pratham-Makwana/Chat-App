@@ -63,12 +63,13 @@ class _MessageCardState extends State<MessageCard> {
             child: widget.message.type == Type.text
 
                 /// show text
-                ? Text(widget.message.msg)
+                ? Text(widget.message.msg,style: Theme.of(context).textTheme.titleMedium,)
 
                 /// show images
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
+
                       imageUrl: widget.message.msg,
                       placeholder: (context, url) => const Padding(
                         padding: EdgeInsets.all(8.0),
@@ -134,14 +135,6 @@ class _MessageCardState extends State<MessageCard> {
             ///double tick blue icon for message read
             if (widget.message.read.isNotEmpty)
               const Icon(Icons.done_all_rounded, color: Colors.blue, size: 20),
-            // Icon(
-            //     widget.message.read.isNotEmpty
-            //         ? Icons.done_all_rounded
-            //         : Icons.done_all_rounded,
-            //     color: widget.message.read.isNotEmpty
-            //         ? Colors.blue
-            //         : Colors.black54,
-            //     size: 20),
 
             /// for adding some space
             const SizedBox(
@@ -152,7 +145,6 @@ class _MessageCardState extends State<MessageCard> {
             Text(
               MyDateUtil.getFormattedTime(
                   context: context, time: widget.message.sent),
-              //widget.message.sent.substring(0, 5),
               style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ],
@@ -178,7 +170,10 @@ class _MessageCardState extends State<MessageCard> {
             child: widget.message.type == Type.text
 
                 /// show text
-                ? Text(widget.message.msg)
+                ? Text(
+                    widget.message.msg,
+                    style: Theme.of(context).textTheme.titleMedium
+                  )
 
                 /// show images
                 : ClipRRect(
@@ -203,6 +198,7 @@ class _MessageCardState extends State<MessageCard> {
     );
   }
 
+  /// bottom sheet for modifying message details
   void _showBottomSheet(bool isMe) {
     showModalBottomSheet(
         backgroundColor: Colors.white,
@@ -250,18 +246,20 @@ class _MessageCardState extends State<MessageCard> {
                       ),
                       name: 'Save Image',
                       onTab: () async {
-                       try{
-                         await GallerySaver.saveImage(widget.message.msg,albumName: 'chat').then((success){
-                           /// for hiding bottom sheet
-                           Navigator.pop(context);
-                           if(success != null && success){
-                             Dialogs.showSnackBar(context, 'Image Successfully Saved!');
-                           }
-                         });
-                       }catch(e){
-                         log('ErrorWhileSavingImage: $e');
-
-                       }
+                        try {
+                          await GallerySaver.saveImage(widget.message.msg,
+                                  albumName: 'chat')
+                              .then((success) {
+                            /// for hiding bottom sheet
+                            Navigator.pop(context);
+                            if (success != null && success) {
+                              Dialogs.showSnackBar(
+                                  context, 'Image Successfully Saved!');
+                            }
+                          });
+                        } catch (e) {
+                          log('ErrorWhileSavingImage: $e');
+                        }
                       }),
 
               /// Divider or Separator
@@ -279,7 +277,11 @@ class _MessageCardState extends State<MessageCard> {
                       size: 26,
                     ),
                     name: 'Edit Message',
-                    onTab: () {}),
+                    onTab: () {
+                      /// for hiding bottom sheet
+                      Navigator.pop(context);
+                      _showMessageUpdateDialog();
+                    }),
 
               if (isMe)
                 _OptionItem(
@@ -325,8 +327,72 @@ class _MessageCardState extends State<MessageCard> {
           );
         });
   }
+
+  /// dialog for updating message content
+  void _showMessageUpdateDialog() {
+    String updatedMsg = widget.message.msg;
+
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              contentPadding: const EdgeInsets.only(
+                  left: 24, right: 24, top: 20, bottom: 10),
+
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+
+              //title
+              title: const Row(
+                children: [
+                  Icon(
+                    Icons.message,
+                    color: Colors.deepPurple,
+                    size: 28,
+                  ),
+                  Text(' Update Message')
+                ],
+              ),
+
+              //content
+              content: TextFormField(
+                initialValue: updatedMsg,
+                maxLines: null,
+                onChanged: (value) => updatedMsg = value,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15)))),
+              ),
+
+              //actions
+              actions: [
+                //cancel button
+                MaterialButton(
+                    onPressed: () {
+                      //hide alert dialog
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.deepPurple, fontSize: 16),
+                    )),
+
+                //update button
+                MaterialButton(
+                    onPressed: () {
+                      /// hide alert dialog
+                      Navigator.pop(context);
+                      APIs.updateMessage(widget.message, updatedMsg);
+                    },
+                    child: const Text(
+                      'Update',
+                      style: TextStyle(color: Colors.deepPurple, fontSize: 16),
+                    ))
+              ],
+            ));
+  }
 }
 
+/// custom option card {for copy, edit, delete, etc}
 class _OptionItem extends StatelessWidget {
   final Icon icon;
   final String name;
