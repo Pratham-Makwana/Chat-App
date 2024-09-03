@@ -1,9 +1,14 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatapp/apis/apis.dart';
 import 'package:chatapp/model/message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 import '../helper/date_util.dart';
+import '../helper/dialogs.dart';
 import '../main.dart';
 
 class MessageCard extends StatefulWidget {
@@ -228,7 +233,15 @@ class _MessageCardState extends State<MessageCard> {
                         size: 26,
                       ),
                       name: 'Copy Text',
-                      onTab: () {})
+                      onTab: () async {
+                        await Clipboard.setData(
+                                ClipboardData(text: widget.message.msg))
+                            .then((value) {
+                          /// for hiding bottom sheet
+                          Navigator.pop(context);
+                          Dialogs.showSnackBar(context, 'Text Copied!');
+                        });
+                      })
                   : _OptionItem(
                       icon: const Icon(
                         Icons.download_for_offline_outlined,
@@ -236,7 +249,20 @@ class _MessageCardState extends State<MessageCard> {
                         size: 26,
                       ),
                       name: 'Save Image',
-                      onTab: () {}),
+                      onTab: () async {
+                       try{
+                         await GallerySaver.saveImage(widget.message.msg,albumName: 'chat').then((success){
+                           /// for hiding bottom sheet
+                           Navigator.pop(context);
+                           if(success != null && success){
+                             Dialogs.showSnackBar(context, 'Image Successfully Saved!');
+                           }
+                         });
+                       }catch(e){
+                         log('ErrorWhileSavingImage: $e');
+
+                       }
+                      }),
 
               /// Divider or Separator
               if (isMe)
@@ -263,7 +289,12 @@ class _MessageCardState extends State<MessageCard> {
                       size: 26,
                     ),
                     name: 'Delete Message',
-                    onTab: () {}),
+                    onTab: () {
+                      APIs.deleteMessage(widget.message).then((value) {
+                        /// for hiding bottom sheet
+                        Navigator.pop(context);
+                      });
+                    }),
 
               /// Divider or Separator
               Divider(
@@ -277,7 +308,8 @@ class _MessageCardState extends State<MessageCard> {
                     Icons.send,
                     color: Colors.black,
                   ),
-                  name: 'Send At: ',
+                  name:
+                      'Send At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
                   onTab: () {}),
 
               _OptionItem(
@@ -285,7 +317,9 @@ class _MessageCardState extends State<MessageCard> {
                     Icons.remove_red_eye_rounded,
                     color: Colors.black,
                   ),
-                  name: 'Read At: ',
+                  name: widget.message.read.isEmpty
+                      ? 'Read At : Not Seen Yet'
+                      : 'Read At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.read)} ',
                   onTab: () {}),
             ],
           );

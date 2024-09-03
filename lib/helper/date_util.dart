@@ -8,9 +8,29 @@ class MyDateUtil {
     return TimeOfDay.fromDateTime(date).format(context);
   }
 
+  /// for getting formatted time for sent & read
+  static String getMessageTime(
+      {required BuildContext context, required String time}) {
+    final DateTime sent = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
+    final DateTime now = DateTime.now();
+
+    final formattedTime = TimeOfDay.fromDateTime(sent).format(context);
+    if (now.day == sent.day &&
+        now.month == sent.month &&
+        now.year == sent.year) {
+      return formattedTime;
+    }
+
+    return now.year == sent.year
+        ? '$formattedTime - ${sent.day} ${_getMonth(sent)}'
+        : '$formattedTime - ${sent.day} ${_getMonth(sent)} ${sent.year}';
+  }
+
   ///  last message time (user in chat card)
   static String getLastMessageTime(
-      {required BuildContext context, required String time,bool showYear = false}) {
+      {required BuildContext context,
+      required String time,
+      bool showYear = false}) {
     final DateTime sentTime =
         DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     final DateTime currentTime = DateTime.now();
@@ -22,7 +42,9 @@ class MyDateUtil {
     }
 
     /// sentTime.month return integer so used switch case to get month
-    return showYear ? '${sentTime.day} ${_getMonth(sentTime)} ${sentTime.year}': '${sentTime.day} ${_getMonth(sentTime)}';
+    return showYear
+        ? '${sentTime.day} ${_getMonth(sentTime)} ${sentTime.year}'
+        : '${sentTime.day} ${_getMonth(sentTime)}';
   }
 
   static String _getMonth(DateTime date) {

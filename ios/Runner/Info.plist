@@ -46,9 +46,14 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
+    <!-- Permission for picking image from gallery or taking image from camera -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App requires access to the photo library for picking pictures.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App requires access to the camera for taking pictures.</string>
+
+    <!-- for storing image into gallery-->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app require read and write access to photo library</string>
 </dict>
 </plist>

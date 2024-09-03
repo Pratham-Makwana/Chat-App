@@ -245,6 +245,18 @@ class APIs {
         .snapshots();
   }
 
+  /// delete msg
+  static Future<void> deleteMessage(Message message) async {
+    await firestore
+        .collection('chats/${getConversationID(message.toId)}/messages/')
+        .doc(message.sent)
+        .delete();
+
+    if (message.type == Type.image) {
+      await storage.refFromURL(message.msg).delete();
+    }
+  }
+
   /// send chat image
   static Future<void> sendChatImage(ChatUser chatUser, File file) async {
     /// getting the file extension

@@ -55,6 +55,12 @@ dependencies:
   # For Creating Notification Channel
   flutter_notification_channel: ^3.1.0
 
+  # For storing images into gallery
+  gallery_saver: ^2.3.2
+
+dependency_overrides:
+  http: ^0.13.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
