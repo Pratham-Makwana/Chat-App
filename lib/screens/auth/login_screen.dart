@@ -72,11 +72,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     //mq = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.white,
       /// AppBar
       appBar: AppBar(
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
-        title: const Text(
-          "Chat App",
+        title:  Text(
+          "Chat App",style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
 

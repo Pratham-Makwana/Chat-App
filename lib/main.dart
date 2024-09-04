@@ -16,7 +16,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   /// enter full-screen
- // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
   await _initializeFirebase();
 
@@ -46,7 +47,6 @@ class MyApp extends StatelessWidget {
           titleTextStyle: const TextStyle(
               color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal),
         ),
-
       ),
       home: const SplashScreen(),
     );
@@ -64,4 +64,3 @@ Future<void> _initializeFirebase() async {
 
   log('\nNotification Channel Result: $result');
 }
-
