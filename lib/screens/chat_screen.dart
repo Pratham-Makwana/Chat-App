@@ -38,51 +38,47 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: SafeArea(
-        /// emoji are shown  & back button pressed then hide emoji
-        /// or else simple close current screen on back button click
-        child: PopScope(
-          // onWillPop: () {
-          //   if (_showEmoji) {
-          //     setState(() => _showEmoji = !_showEmoji);
-          //     return Future.value(false);
-          //   } else {
-          //     return Future.value(true);
-          //   }
-          // },
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (_showEmoji) {
-              setState(() => _showEmoji = !_showEmoji);
-              return;
-            }
+      child: PopScope(
+        // onWillPop: () {
+        //   if (_showEmoji) {
+        //     setState(() => _showEmoji = !_showEmoji);
+        //     return Future.value(false);
+        //   } else {
+        //     return Future.value(true);
+        //   }
+        // },
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (_showEmoji) {
+            setState(() => _showEmoji = !_showEmoji);
+            return;
+          }
 
-            /// some delay before pop
-            Future.delayed(Duration(milliseconds: 300), () {
-              try {
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                }
-              } catch (e) {
-                log('ErrorPop: $e');
+          /// some delay before pop
+          Future.delayed(const Duration(milliseconds: 300), () {
+            try {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
               }
-            });
-          },
-          child: Scaffold(
-            backgroundColor: const Color(0xffFFFFFF),
+            } catch (e) {
+              log('ErrorPop: $e');
+            }
+          });
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xffFFFFFF),
 
-            /// app bar
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              flexibleSpace: _appBar(),
-            ),
+          /// app bar
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            flexibleSpace: _appBar(),
+          ),
 
-            /// body
-            body: Column(
+          /// body
+          body: SafeArea(
+            child: Column(
               children: [
                 Expanded(
                   child: StreamBuilder(
@@ -173,67 +169,71 @@ class _ChatScreenState extends State<ChatScreen> {
                 builder: (_) => ViewProfileScreen(user: widget.user)));
       },
       child: StreamBuilder(
-        stream: APIs.getUserinfo(widget.user),
+        stream: APIs.getUserInfo(widget.user),
         builder: (context, snapshot) {
           final data = snapshot.hasData ? snapshot.data?.docs : [];
           final list = data!.map((e) => ChatUser.fromJson(e.data())).toList();
-          return Row(
-            children: [
-              /// back button
-              IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back)),
+          return Padding(
+            padding:  EdgeInsets.only(top: mq.height * .04),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                /// back button
+                IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back)),
 
-              /// user profile picture
-              ClipRRect(
-                borderRadius: BorderRadius.circular(mq.height * .4),
-                child: CachedNetworkImage(
-                  height: mq.height * .05,
-                  width: mq.height * .05,
-                  imageUrl: list.isNotEmpty ? list[0].image : widget.user.image,
-                  // placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) =>
-                      const CircleAvatar(child: Icon(CupertinoIcons.person)),
+                /// user profile picture
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(mq.height * .4),
+                  child: CachedNetworkImage(
+                    height: mq.height * .05,
+                    width: mq.height * .05,
+                    imageUrl: list.isNotEmpty ? list[0].image : widget.user.image,
+                    // placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const CircleAvatar(child: Icon(CupertinoIcons.person)),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
+                const SizedBox(
+                  width: 10,
+                ),
 
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// user name
-                  Text(
-                    list.isNotEmpty ? list[0].name : widget.user.name,
-                    style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500),
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// user name
+                    Text(
+                      list.isNotEmpty ? list[0].name : widget.user.name,
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500),
+                    ),
 
-                  /// for adding some space
-                  const SizedBox(
-                    height: 1,
-                  ),
+                    /// for adding some space
+                    const SizedBox(
+                      height: 1,
+                    ),
 
-                  /// last seen time of user
-                  Text(
-                    list.isNotEmpty
-                        ? list[0].isOnline
-                            ? 'Online'
-                            : MyDateUtil.getLastActiveTime(
-                                context: context,
-                                lastActive: list[0].lastActive)
-                        : MyDateUtil.getLastActiveTime(
-                            context: context,
-                            lastActive: widget.user.lastActive),
-                    style: const TextStyle(fontSize: 13, color: Colors.black54),
-                  ),
-                ],
-              )
-            ],
+                    /// last seen time of user
+                    Text(
+                      list.isNotEmpty
+                          ? list[0].isOnline
+                              ? 'Online'
+                              : MyDateUtil.getLastActiveTime(
+                                  context: context,
+                                  lastActive: list[0].lastActive)
+                          : MyDateUtil.getLastActiveTime(
+                              context: context,
+                              lastActive: widget.user.lastActive),
+                      style: const TextStyle(fontSize: 13, color: Colors.black54),
+                    ),
+                  ],
+                )
+              ],
+            ),
           );
         },
       ),
@@ -342,7 +342,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
             onPressed: () {
               if (_textController.text.isNotEmpty) {
-                APIs.sendMessage(widget.user, _textController.text, Type.text);
+                if (_list.isEmpty) {
+                  /// on first message (add user to my_user collection of chat-user )
+                  APIs.sendFirstMessage(
+                      widget.user, _textController.text, Type.text);
+                } else {
+                  /// simply send message
+                  APIs.sendMessage(
+                      widget.user, _textController.text, Type.text);
+                }
                 _textController.text = '';
               }
             },
